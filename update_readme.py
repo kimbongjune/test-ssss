@@ -1,50 +1,23 @@
 import os
-import re
 
-def get_md_files(directory):
-    md_files = []
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".md") and root == directory:
-                md_files.append((root, file))
-    return md_files
+def update_readme_with_new_md_file(new_md_file_path):
+    # Extract info from the new MD file path
+    filename = os.path.basename(new_md_file_path)
+    display_name = filename.replace(".md", "").replace("_", " ")
+    link = f"- [[{display_name}]]({new_md_file_path})\n"
 
-def extract_link_name(md_file):
-    return re.sub(r"^\d{4}-\d{2}-\d{2}_", "", md_file[:-3])
+    # Read the existing README
+    with open("README.md", "r") as f:
+        lines = f.readlines()
 
-def update_readme(md_files, readme_path):
-    tree = {}
-    uncategorized = []
+    # Append the new link at the end of README.md
+    lines.append(link)
 
-    for root, file in md_files:
-        link_name = extract_link_name(file)
-        link = f"* [[{link_name}]]({root}/{file})"
-
-        categories = root.split("/")
-        node = tree
-        for cat in categories:
-            node = node.setdefault(cat, {})
-        
-        node.setdefault("links", []).append(link)
-
-    def build_readme(node, depth):
-        if "links" in node:
-            return "\n".join(sorted(node["links"]))
-        
-        result = []
-        for key, child_node in sorted(node.items()):
-            header = "#" * depth
-            sub_content = build_readme(child_node, depth + 1)
-            section = f"{header} {key}\n{sub_content}"
-            result.append(section)
-        return "\n".join(result)
-
-    readme_content = build_readme(tree, 1)
-    with open(readme_path, "w") as f:
-        f.write(readme_content)
+    # Write back to README
+    with open("README.md", "w") as f:
+        f.writelines(lines)
 
 if __name__ == "__main__":
-    directory = "."  # 루트 디렉토리
-    readme_path = "./README.md"
-    md_files = get_md_files(directory)
-    update_readme(md_files, readme_path)
+    # Replace with the actual new MD file path when running through GitHub Actions
+    new_md_file_path = "your_new_md_file_path_here.md"
+    update_readme_with_new_md_file(new_md_file_path)
