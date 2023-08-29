@@ -1,3 +1,11 @@
+name: Update Readme with Merged File Link
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+
 jobs:
   update_readme:
     runs-on: ubuntu-latest
