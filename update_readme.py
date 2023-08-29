@@ -25,6 +25,7 @@ def main():
         link = md_file.html_url
         updated_readme += f"- [[{date}] {title}]({link})\n"
 
+    print(f"Path: {readme.path}, SHA: {readme.sha}")
     try:
         repo.update_file(readme.path, "Updated README", updated_readme, readme.sha, branch="main")
     except Exception as e:
