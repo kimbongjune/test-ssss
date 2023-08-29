@@ -18,16 +18,5 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt  # 추가적인 라이브러리가 필요하다면 requirements.txt에 명시
-
-    - name: Run update_readme.py
+    - name: Run script
       run: python update_readme.py
-
-    - name: Commit changes
-      run: |
-        git config user.name "GitHub Action"
-        git config user.email "action@github.com"
-        git add README.md
-        git commit -m "Automatically update README.md" || exit 0  # commit이 없을 경우도 성공으로 처리
-        git push origin main
