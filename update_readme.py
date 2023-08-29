@@ -3,13 +3,15 @@ import os
 
 def main():
     token = os.getenv("GH_TOKEN")
-    repo_name = "kimbongjune/test-ssss"  # Replace with your repo name
+    repo_name = os.getenv("REPO_NAME")  # 동적으로 설정됨
     g = Github(token)
     repo = g.get_repo(repo_name)
-    readme = repo.get_contents("README.md", ref="main")
-    
-    if readme is None:
-        print("README.md not found")
+
+    try:
+        readme = repo.get_contents("README.md", ref="main")
+        print(f"Path: {readme.path}, SHA: {readme.sha}")  # 추가한 디버깅 라인
+    except Exception as e:
+        print(f"Error while fetching README.md: {e}")
         return
 
     new_md_files = [f for f in repo.get_contents("", ref="main") if f.name.endswith('.md')]
@@ -23,7 +25,10 @@ def main():
         link = md_file.html_url
         updated_readme += f"- [[{date}] {title}]({link})\n"
 
-    repo.update_file(readme.path, "Updated README", updated_readme, readme.sha, branch="main")
+    try:
+        repo.update_file(readme.path, "Updated README", updated_readme, readme.sha, branch="main")
+    except Exception as e:
+        print(f"Error while updating README.md: {e}")
 
 if __name__ == "__main__":
     main()
