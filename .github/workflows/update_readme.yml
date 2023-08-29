@@ -8,23 +8,23 @@ on:
       - main
 
 jobs:
-  update_readme:
+  update-readme:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-
-      - name: Install dependencies
-        run: pip install PyGithub
-
-      - name: Run Python Script
-        run: python update_readme.py
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Set up environment variable for repository name
+      run: echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
+    - name: Install dependencies
+      run: pip install PyGithub
+    - name: Update README
+      run: python update_readme.py
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Commit changes
         run: |
