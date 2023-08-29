@@ -1,57 +1,24 @@
-import os
-import re
 from github import Github
+import os
 
-# Parse the merged filename
-merged_filename = os.environ.get('MERGED_FILENAME')
-date_match = re.match(r'^(\d{4}-\d{2}-\d{2})_(.*)\.md$', merged_filename)
-if not date_match:
-    exit("Invalid merged filename format")
+def main():
+    token = os.getenv("GH_TOKEN")
+    repo_name = "kimbongjune/TIL"  # Replace with your repo name
+    g = Github(token)
+    repo = g.get_repo(repo_name)
+    readme = repo.get_contents("README.md")
+    new_md_files = [f for f in repo.get_contents("") if f.name.endswith('.md')]
 
-# Extract components from the filename
-file_date = date_match.group(1)
-file_title = date_match.group(2).replace("-", " ")
+    updated_readme = ""
+    for md_file in new_md_files:
+        if md_file.name == "README.md":
+            continue
+        title = md_file.name.split("_")[1].replace(".md", "")
+        date = md_file.name.split("_")[0]
+        link = md_file.html_url
+        updated_readme += f"- [[{date}] {title}]({link})\n"
 
-# Construct the link
-repo_name = os.environ.get('REPO_NAME')  # Getting repo name from environment variable
-file_link = f"- [[{file_date}] {file_title}](https://github.com/{repo_name}/blob/main/{merged_filename})"
+    repo.update_file(readme.path, "Updated README", updated_readme, readme.sha)
 
-# Add the link to the README.md file
-readme_path = 'README.md'
-with open(readme_path, 'r') as readme_file:
-    readme_content = readme_file.read()
-
-readme_content = f"{file_link}\n{readme_content}"
-
-with open(readme_path, 'w') as readme_file:
-    readme_file.write(readme_content)
-
-# Initialize the GitHub API
-g = Github(os.environ['GITHUB_TOKEN'])
-repo = g.get_repo(repo_name)
-
-# Commit the changes
-branch = repo.get_branch('main')
-tree = repo.get_git_tree(branch.commit.sha, recursive='true')
-element = tree.tree[0]
-base_tree = repo.get_git_tree(element.sha, recursive='true')
-output_tree = repo.create_git_tree(
-    [
-        {
-            "path": readme_path,
-            "mode": "100644",  # Regular file mode
-            "type": "blob",
-            "content": readme_content,
-        }
-    ],
-    base_tree
-)
-
-commit = repo.create_git_commit(
-    "Update readme with merged file link",
-    output_tree,
-    [branch.commit],
-)
-
-# Update the reference
-branch.edit(commit.sha)
+if __name__ == "__main__":
+    main()
