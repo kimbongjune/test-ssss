@@ -19,10 +19,7 @@ jobs:
       with:
         python-version: '3.x'
     - name: Run script
-      env:
-        GITHUB_REPOSITORY: ${{ github.repository }}
-        CHANGED_FILES: ${{ github.event.head_commit.modified }}
-      run: python update_readme.py "${{ github.event.head_commit.modified }}" 
+      run: python update_readme.py "${{ github.event.commits[0].added }}"
     - name: Commit and push
       run: |
         git config --local user.email "action@github.com"
