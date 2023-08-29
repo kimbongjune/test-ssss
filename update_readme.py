@@ -1,14 +1,15 @@
+import sys
 import os
 
 def update_readme(changed_files):
-    with open("README.md", "a") as f:
-        for changed_file in changed_files:
-            if changed_file.endswith('.md'):
-                date, title = changed_file.split("_", 1)
-                title = title.replace(".md", "")
-                new_link = f"- [[{date}] {title}](https://github.com/kimbongjune/TIL/blob/main/{changed_file})\n"
+    for added_file in changed_files:
+        if added_file.endswith('.md'):
+            date, title = added_file.split("_", 1)
+            title = title.replace(".md", "")
+            new_link = f"- [[{date}] {title}](https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/main/{added_file})\n"
+            with open("README.md", "a") as f:
                 f.write(new_link)
 
 if __name__ == "__main__":
-    changed_files = os.environ['CHANGED_FILES'].split()
+    changed_files = sys.argv[1].split(',')
     update_readme(changed_files)
