@@ -19,9 +19,6 @@ jobs:
       with:
         python-version: '3.x'
       
-    - name: Install Dependencies
-      run: pip install PyGithub
-
     - name: Update README
       run: python update_readme.py
 
