@@ -1,56 +1,50 @@
 import os
 import re
 
-def get_md_files():
+def get_md_files(directory):
     md_files = []
-    for root, dirs, files in os.walk("."):
+    for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith(".md") and file != "README.md":
-                path = os.path.join(root, file).replace("./", "")
-                md_files.append(path)
+            if file.endswith(".md") and root == directory:
+                md_files.append((root, file))
     return md_files
 
 def extract_link_name(md_file):
-    date_removed = re.sub(r"^\d{4}-\d{2}-\d{2}_", "", md_file)
-    return os.path.splitext(date_removed)[0]
+    return re.sub(r"^\d{4}-\d{2}-\d{2}_", "", md_file[:-3])
 
-def update_readme(md_files):
-    with open("README.md", "r") as f:
-        lines = f.readlines()
+def update_readme(md_files, readme_path):
+    tree = {}
+    uncategorized = []
 
-    new_lines = []
-    uncategorized_lines = []
+    for root, file in md_files:
+        link_name = extract_link_name(file)
+        link = f"* [[{link_name}]]({root}/{file})"
 
-    for md_file in md_files:
-        link_name = extract_link_name(md_file.split('/')[-1])
-        link = f"- [[{link_name}]]({md_file})"
-        depth = md_file.count("/")
-        header = "#" * (depth + 1)
-        section_name = md_file.split("/")[-2] if depth > 0 else "미분류"
+        categories = root.split("/")
+        node = tree
+        for cat in categories:
+            node = node.setdefault(cat, {})
+        
+        node.setdefault("links", []).append(link)
 
-        section_found = False
-        for i, line in enumerate(lines):
-            if line.startswith(header + " " + section_name):
-                section_found = True
-                while i + 1 < len(lines) and not lines[i + 1].startswith("#"):
-                    i += 1
-                lines.insert(i, link + "\n")
-                break
+    def build_readme(node, depth):
+        if "links" in node:
+            return "\n".join(sorted(node["links"]))
+        
+        result = []
+        for key, child_node in sorted(node.items()):
+            header = "#" * depth
+            sub_content = build_readme(child_node, depth + 1)
+            section = f"{header} {key}\n{sub_content}"
+            result.append(section)
+        return "\n".join(result)
 
-        if not section_found:
-            line_to_add = f"{header} {section_name}\n{link}\n"
-            if section_name == "미분류":
-                uncategorized_lines.append(line_to_add)
-            else:
-                new_lines.append(line_to_add)
-
-    uncategorized_header = "# 미분류\n" if uncategorized_lines else ""
-
-    updated_lines = lines + new_lines + [uncategorized_header] + uncategorized_lines
-
-    with open("README.md", "w") as f:
-        f.writelines(updated_lines)
+    readme_content = build_readme(tree, 1)
+    with open(readme_path, "w") as f:
+        f.write(readme_content)
 
 if __name__ == "__main__":
-    md_files = get_md_files()
-    update_readme(md_files)
+    directory = "."  # 루트 디렉토리
+    readme_path = "./README.md"
+    md_files = get_md_files(directory)
+    update_readme(md_files, readme_path)
