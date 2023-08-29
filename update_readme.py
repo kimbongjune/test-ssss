@@ -6,8 +6,13 @@ def main():
     repo_name = "kimbongjune/TIL"  # Replace with your repo name
     g = Github(token)
     repo = g.get_repo(repo_name)
-    readme = repo.get_contents("README.md")
-    new_md_files = [f for f in repo.get_contents("") if f.name.endswith('.md')]
+    readme = repo.get_contents("README.md", ref="main")
+    
+    if readme is None:
+        print("README.md not found")
+        return
+
+    new_md_files = [f for f in repo.get_contents("", ref="main") if f.name.endswith('.md')]
 
     updated_readme = ""
     for md_file in new_md_files:
@@ -18,7 +23,7 @@ def main():
         link = md_file.html_url
         updated_readme += f"- [[{date}] {title}]({link})\n"
 
-    repo.update_file(readme.path, "Updated README", updated_readme, readme.sha)
+    repo.update_file(readme.path, "Updated README", updated_readme, readme.sha, branch="main")
 
 if __name__ == "__main__":
     main()
