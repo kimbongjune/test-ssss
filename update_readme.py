@@ -3,7 +3,7 @@ import os
 
 def main():
     token = os.getenv("GH_TOKEN")
-    repo_name = "kimbongjune/TIL"  # Replace with your repo name
+    repo_name = "kimbongjune/test-ssss"  # Replace with your repo name
     g = Github(token)
     repo = g.get_repo(repo_name)
     readme = repo.get_contents("README.md", ref="main")
