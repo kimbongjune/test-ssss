@@ -2,35 +2,35 @@ name: Update README
 
 on:
   push:
+    branches:
+      - main
     paths:
       - '**.md'
 
 jobs:
-  build:
+  update-readme:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python 3.x
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: Get changed files
-      id: getfile
-      run: |
-        echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-        git diff-tree --no-commit-id --name-only -r ${{ github.sha }} >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+    - name: Run update_readme.py
+      run: python update_readme.py
 
-    - name: Run script
-      run: python update_readme.py $CHANGED_FILES
-
-    - name: Commit changes
+    - name: Commit and push if README.md changed
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add README.md
-        git commit -m "Update README.md" || echo "No changes to commit"
-        git push
+        if git diff --cached --exit-code; then
+          echo "No changes in README.md"
+        else
+          git commit -m "Update README.md"
+          git push
+        fi
