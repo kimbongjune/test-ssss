@@ -1,9 +1,10 @@
-name: Update Readme with Merged File Link
+name: Update README
 on:
-  pull_request:
-    types:
-      - closed
-
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
 jobs:
   update_readme:
     runs-on: ubuntu-latest
@@ -25,7 +26,8 @@ jobs:
         
       - name: List and Filter Merged Files
         run: |
-          merged_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '.*\.md$')
+          git fetch origin ${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
+          merged_files=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.sha }} | grep '.*\.md$')
           echo "$merged_files" > merged_files.txt
           
       - name: Python Script to Update Readme
