@@ -10,16 +10,14 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
       with:
-        fetch-depth: 0
-    - name: Set up Python
-      uses: actions/setup-python@v2
+        fetch-depth: 2 # Fetch last two commits to detect changed files
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
     - name: Run script
-      run: python update_readme.py "${{ github.event.commits[0].added }}"
+      run: python update_readme.py
     - name: Commit and push
       run: |
         git config --local user.email "action@github.com"
