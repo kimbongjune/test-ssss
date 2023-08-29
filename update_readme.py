@@ -3,7 +3,7 @@ import os
 
 def main():
     token = os.getenv("GH_TOKEN")
-    repo_name = os.getenv("REPO_NAME")  # 동적으로 설정됨
+    repo_name = "kimbongjune/test-ssss"  # 귀하의 리포지터리 이름으로 변경해주세요
     g = Github(token)
     repo = g.get_repo(repo_name)
 
