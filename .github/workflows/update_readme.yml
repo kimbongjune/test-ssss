@@ -21,6 +21,8 @@ jobs:
       with:
         python-version: '3.x'
     - name: Run script
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
       run: python update_readme.py ${{ github.event.pull_request.merged }} "${{ github.event.pull_request.title }}"
     - name: Commit and push
       run: |
