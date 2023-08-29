@@ -1,27 +1,33 @@
-name: Update README
+name: Update Readme with Merged File Link
 on:
   push:
     branches:
       - main
-    paths:
-      - '**.md'
 
 jobs:
-  update:
+  update_readme:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 2 # Fetch last two commits to detect changed files
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    - name: Run script
-      run: python update_readme.py
-    - name: Commit and push
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add README.md
-        git commit -m "Automatically update README.md"
-        git push origin main
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: List and Filter Merged Files
+        run: |
+          merged_files=$(git diff --name-only HEAD^ HEAD | grep '.*\.md$')
+          echo "$merged_files" > merged_files.txt
+          
+      - name: Python Script to Update Readme
+        run: |
+          python update_readme.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.repository }}  # Using the GitHub environment variable
+          
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "Update readme with merged file link"
+          git push
