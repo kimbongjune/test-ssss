@@ -8,9 +8,8 @@ on:
       - '**.md'
 
 jobs:
-  update-readme:
+  update_readme:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -19,13 +18,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+      
+    - name: Install Dependencies
+      run: pip install PyGithub
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyyaml
-
-    - name: Run script
+    - name: Update README
       run: python update_readme.py
 
     - name: Commit changes
