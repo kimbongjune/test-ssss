@@ -18,10 +18,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+    - name: Get changed files
+      id: getfile
+      run: |
+        echo "Changed files:"
+        changed_files=$(git diff --name-only HEAD~1 HEAD)
+        echo $changed_files
+        echo "CHANGED_FILES=$changed_files" >> $GITHUB_ENV
     - name: Run script
-      env:
-        GITHUB_REPOSITORY: ${{ github.repository }}
-      run: python update_readme.py ${{ github.event.pull_request.merged }} "${{ github.event.pull_request.title }}"
+      run: python update_readme.py $CHANGED_FILES
     - name: Commit and push
       run: |
         git config --local user.email "action@github.com"
