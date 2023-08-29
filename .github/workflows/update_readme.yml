@@ -1,12 +1,10 @@
 name: Update README
 on:
-  pull_request:
-    types:
-      - closed
-    paths:
-      - '**.md'
+  push:
     branches:
       - main
+    paths:
+      - '**.md'
 
 jobs:
   update:
