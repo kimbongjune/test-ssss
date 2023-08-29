@@ -18,15 +18,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Get changed files
-      id: getfile
-      run: |
-        echo "Changed files:"
-        changed_files=$(git diff --name-only HEAD~1 HEAD)
-        echo $changed_files
-        echo "CHANGED_FILES=$changed_files" >> $GITHUB_ENV
     - name: Run script
-      run: python update_readme.py $CHANGED_FILES
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        CHANGED_FILES: ${{ github.event.head_commit.modified }}
+      run: python update_readme.py "${{ github.event.head_commit.modified }}" 
     - name: Commit and push
       run: |
         git config --local user.email "action@github.com"
