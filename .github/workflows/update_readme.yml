@@ -9,68 +9,21 @@ on:
       - main
       
 jobs:
-  update_links:
+  update_readme:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
-    - name: Set up Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 14
+        node-version: '14'
+    
+    - name: Install Octokit
+      run: npm install @octokit/rest
 
-    - name: Run script
-      run: |
-        # 최신 커밋 메시지 가져오기
-        commit_message=$(git log -1 --pretty=format:"%s")
-        # 파일 이름 패턴 정의
-        file_pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}_.*?\.md"
-        if [[ $commit_message =~ $file_pattern ]]; then
-          # 파일 이름 추출
-          file_name="${BASH_REMATCH[0]}"
-          # 파일에 대한 링크 생성
-          link_text="[${file_name:0:10}] ${file_name:11:${#file_name}-14}"
-          file_link="https://github.com/kimbongjune/TIL/blob/main/$file_name"
-          
-          # README.md 파일 업데이트
-          if [ ! -f "README.md" ]; then
-            echo "# Today I Learned(TIL)" >> README.md
-            echo "## 카테고리" >> README.md
-          fi
-          
-          # 기존에 파일이 이미 링크로 추가된 경우 제거
-          if grep -q "$link_text" README.md; then
-            sed -i "/\[\[$link_text\].*\]/d" README.md
-          fi
-          
-          # 링크 추가 (띄어쓰기와 특수문자를 URL 인코딩하여 처리)
-          encoded_file_name=$(urlencode "$file_name")
-          echo "- [[${file_name:0:10}] ${file_name:11:${#file_name}-14}]($file_link)" >> README.md
-          
-          # Git 설정 및 변경 내용 커밋
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add README.md
-          git commit -m "Add link for $file_name"
-          git push origin main
-        fi
-        
-        # 기존에 삭제된 파일이 있는지 확인
-        deleted_files=$(git log --diff-filter=D --summary | grep delete | awk '{print $4}')
-        if [ ! -z "$deleted_files" ]; then
-          # README.md 파일에서 해당 파일 링크 제거
-          for deleted_file in $deleted_files; do
-            if grep -q "$deleted_file" README.md; then
-              sed -i "/\[\[$deleted_file\].*\]/d" README.md
-            fi
-          done
-          
-          # Git 설정 및 변경 내용 커밋
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add README.md
-          git commit -m "Remove links for deleted files"
-          git push origin main
-        fi
+    - name: Update README.md
+      run: node .github/scripts/update_readme.js
