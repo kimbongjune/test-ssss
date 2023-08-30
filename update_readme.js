@@ -15,7 +15,9 @@ if (fs.existsSync('README.md')) {
   readmeContent = '# Today I Learned(TIL)\n## 카테고리\n';
 }
 
-const eventData = JSON.parse(process.env.GITHUB_EVENT_PATH);
+const githubEventPath = process.env['GITHUB_EVENT_PATH']
+const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
+
 if (eventData && eventData.action === 'deleted') {
   console.log('This is a delete operation.');
 } else {
