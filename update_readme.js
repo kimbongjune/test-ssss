@@ -59,6 +59,10 @@ console.log("changedFilesCommand",changedFilesCommand)
 
 console.log("changedFiles",changedFiles)
 
+const decodedChangedFiles = changedFiles.map(file => JSON.parse(`"${file}"`));
+
+console.log("escape?", decodedChangedFiles);
+
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
     console.log("file",file)
