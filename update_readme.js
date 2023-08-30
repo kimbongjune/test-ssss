@@ -36,39 +36,31 @@ changedFiles.forEach(file => {
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
     const linkFile = encodeURIComponent(file);
     
-    let linkToAdd = ""
-    // 파일이 삭제되지 않았을 경우에만 linkToAdd 생성
-    if (!(eventData && eventData.head_commit.message.includes("Delete"))) {
-        if (dirName) {
-            console.log("상위 디렉토리 있음", dirName);
-            const dirs = dirName.split('/');
-            for (let i = 0; i < dirs.length; i++) {
-                const currentDir = dirs[i];
-                if (!readmeContent.includes(`- ${currentDir}\n`)) {
-                    linkToAdd += `- ${currentDir}\n`;
-                }
-                linkToAdd += '\t'.repeat(i + 1);
+    let linkToAdd = "";
+    if (dirName) {
+        const dirs = dirName.split('/');
+        for (let i = 0; i < dirs.length; i++) {
+            const currentDir = dirs[i];
+            if (!readmeContent.includes(`- ${currentDir}\n`)) {
+                linkToAdd += `- ${currentDir}\n`;
             }
-            linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})`;
-        } else {
-            console.log("상위 디렉토리 없음");
-            linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+            linkToAdd += '\t'.repeat(i + 1);
         }
-        
-        console.log("linkToAdd",linkToAdd);
+        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})`;
+    } else {
+        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+    }
 
+    // 파일이 삭제되었을 때
+    if (eventData && eventData.head_commit.message.includes("Delete")) {
+        const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
+    } 
+    // 파일이 추가되거나 변경되었을 때
+    else {
         if (!readmeContent.includes(linkToAdd)) {
             readmeContent += linkToAdd;
         }
-    } else { 
-        console.log("Delete");
-        if (dirName) {
-            console.log("상위 디렉토리 있음", dirName);
-        } else {
-            console.log("상위 디렉토리 없음");
-        }
-        const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
     }
     // if (dirName) {
     //   console.log("상위 디렉토리 있음", dirName)
