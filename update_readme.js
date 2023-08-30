@@ -20,8 +20,8 @@ const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file 
 // 3번: 새로운 md파일의 링크를 추가
 mdFiles.forEach(file => {
   const date = file.split('_')[0];
-  const title = encodeURIComponent(file.split('_')[1].replace('.md', ''));
-  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${file})\n`;
+  const title = decodeURIComponent(filename.substring(11, filename.length - 3));
+  const newLink = `- [[${date}] ${title}](encodeURIComponent(https://github.com/${repository}/blob/main/${file}))\n`;
 
   if (!readmeContent.includes(newLink)) {
     readmeContent += newLink;
@@ -43,11 +43,10 @@ if (process.env.GITHUB_EVENT_NAME === 'delete') {
   const linkRegex = new RegExp(`.*${deletedLink}.*\n`);
   readmeContent = readmeContent.replace(linkRegex, '');
 }
+console.log("readmeContent",readmeContent)
 
 // 5번: README.md 파일을 메인 브랜치에 바로 푸시
 fs.writeFileSync('README.md', readmeContent);
-
-console.log("readmeContent",readmeContent)
 
 (async () => {
   const { data } = await octokit.rest.repos.getContent({
