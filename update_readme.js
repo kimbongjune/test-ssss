@@ -18,7 +18,11 @@ if (fs.existsSync('README.md')) {
 const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
-console.log(eventData)
+if(eventData && eventData.head_commit.message.includes("delete")){
+    console.log("delete", eventData.head_commit.message.url)
+}else{
+    console.log("merge", eventData.head_commit.message.url)
+}
 
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
