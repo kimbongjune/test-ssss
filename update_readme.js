@@ -59,9 +59,11 @@ console.log("changedFilesCommand",changedFilesCommand)
 
 console.log("changedFiles",changedFiles)
 
-const decodedChangedFiles = changedFiles.map(file => JSON.parse(`"${file}"`));
+const options = { encoding: 'utf-8' };  // 인코딩을 명시적으로 설정
 
-console.log("escape?", decodedChangedFiles);
+const changedFilesToUtf8 = execSync(changedFilesCommand, options).trim().split('\n');
+
+console.log("changedFilesToUtf8",changedFilesToUtf8);
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
