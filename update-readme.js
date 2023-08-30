@@ -4,6 +4,8 @@ const { execSync } = require('child_process');
 
 const repoName = process.env.GITHUB_REPOSITORY;
 
+console.log('GITHUB_TOKEN:', process.env.GITHUB_TOKEN)
+
 const isMergedMdFile = (filename) => {
   const regex = /^\d{4}-\d{2}-\d{2}_.*\.md$/;
   return regex.test(filename);
