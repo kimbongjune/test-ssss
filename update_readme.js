@@ -41,14 +41,6 @@ mdFiles.forEach(file => {
   }
 });
 
-// 7번: 삭제된 md파일의 링크를 제거
-if (process.env.GITHUB_EVENT_NAME === 'delete') {
-  console.log("delete")
-  const deletedFile = process.env.GITHUB_EVENT_PATHS;
-  const deletedLink = `- [[${deletedFile.split('_')[0]}] ${encodeURIComponent(deletedFile.split('_')[1].replace('.md', ''))}]`;
-  const linkRegex = new RegExp(`.*${deletedLink}.*\n`);
-  readmeContent = readmeContent.replace(linkRegex, '');
-}
 console.log("readmeContent",readmeContent)
 
 // 5번: README.md 파일을 메인 브랜치에 바로 푸시
