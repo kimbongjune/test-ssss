@@ -18,6 +18,8 @@ if (fs.existsSync('README.md')) {
 const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
+console.log("eventData", eventData)
+
 if(eventData && eventData.head_commit.message.includes("Delete")){
     const deletedFile = eventData.head_commit.message.replace("Delete ", "");
     console.log("delete", deletedFile)
