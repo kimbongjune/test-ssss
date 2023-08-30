@@ -60,12 +60,14 @@ console.log("changedFilesCommand",changedFilesCommand)
 console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
-  console.log("file1",file)
   if (file.includes('.md') && file !== 'README.md') {
-    console.log("file2",file)
+    console.log("file",file)
     const filePathParts = file.split('/');
+    console.log("filePathParts",filePathParts)
     const fileName = filePathParts.pop();
+    console.log("fileName",fileName)
     const dirName = filePathParts.join('/');
+    console.log("dirName",dirName)
     const date = fileName.substring(0, 10);
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
     const linkFile = encodeURIComponent(file);
@@ -77,11 +79,14 @@ changedFiles.forEach(file => {
       linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     }
 
+    console.log("linkToAdd",linkToAdd)
+    
     if (!readmeContent.includes(linkToAdd)) {
       readmeContent += linkToAdd;
     }
 
     if(eventData && eventData.head_commit.message.includes("Delete")){
+      console.log("Delete")
       const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
     }
