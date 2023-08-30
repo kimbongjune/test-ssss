@@ -19,7 +19,7 @@ if (fs.existsSync('README.md')) {
 const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
-console.log("eventData", eventData)
+//console.log("eventData", eventData)
 
 // if(eventData && eventData.head_commit.message.includes("Delete")){
 //     const deletedFile = eventData.head_commit.message.replace("Delete ", "");
@@ -54,6 +54,10 @@ console.log("eventData", eventData)
 
 const changedFilesCommand = "git diff-tree --no-commit-id --name-only -r HEAD";
 const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
+
+console.log("changedFilesCommand",changedFilesCommand)
+
+console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
   if (file.endsWith('.md') && file !== 'README.md') {
