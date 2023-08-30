@@ -28,8 +28,13 @@ mdFiles.forEach(file => {
   }
 });
 
+if (process.env.GITHUB_EVENT_NAME === 'push') {
+  console.log("push")
+}
+
 // 7번: 삭제된 md파일의 링크를 제거
 if (process.env.GITHUB_EVENT_NAME === 'delete') {
+  console.log("delete")
   const deletedFile = process.env.GITHUB_EVENT_PATHS;
   const deletedLink = `- [[${deletedFile.split('_')[0]}] ${encodeURIComponent(deletedFile.split('_')[1].replace('.md', ''))}]`;
   const linkRegex = new RegExp(`.*${deletedLink}.*\n`);
