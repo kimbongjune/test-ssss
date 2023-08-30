@@ -15,7 +15,13 @@ if (fs.existsSync('README.md')) {
   readmeContent = '# Today I Learned(TIL)\n## 카테고리\n';
 }
 
-console.log("process.env)", process.env)
+const eventData = JSON.parse(process.env.GITHUB_EVENT_PATH);
+if (eventData && eventData.action === 'deleted') {
+  console.log('This is a delete operation.');
+} else {
+  console.log('This is a push operation.');
+}
+console.log(eventData)
 
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
