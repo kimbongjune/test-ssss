@@ -69,8 +69,11 @@ changedFiles.forEach(file => {
     const dirName = filePathParts.join('/');
     console.log("dirName",dirName)
     const date = fileName.substring(0, 10);
+    console.log("dirName",date)
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
+    console.log("title",title)
     const linkFile = encodeURIComponent(file);
+    console.log("linkFile",linkFile)
     
     let linkToAdd;
     if (dirName) {
