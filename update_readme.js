@@ -53,17 +53,8 @@ changedFiles.forEach(file => {
 
     // 파일이 삭제되었을 때
     if (eventData && eventData.head_commit.message.includes("Delete")) {
-        if (dirName) {
-            const dirs = dirName.split('/');
-            const currentDir = dirs[0];
-            const dirPattern = `- ${currentDir}([\\s\\S]*?)(?=^-$|^- \\[\\[)`;
-            const regexDir = new RegExp(dirPattern, 'gm');
-            readmeContent = readmeContent.replace(regexDir, `- ${currentDir}\n`);
-        } else {
-            const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regexLink = new RegExp(escapedStringToBeReplaced, 'g');
-            readmeContent = readmeContent.replace(regexLink, '');
-        }
+        const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
     }else {
         if (!readmeContent.includes(linkToAdd)) {
             readmeContent += linkToAdd;
