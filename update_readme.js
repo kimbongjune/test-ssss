@@ -18,11 +18,7 @@ if (fs.existsSync('README.md')) {
 const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
-if (eventData && eventData.action === 'deleted') {
-  console.log('This is a delete operation.');
-} else {
-  console.log('This is a push operation.');
-}
+console.log(eventData)
 
 const deletedFiles = process.env.DELETED_FILES;
 console.log("deletedFiles : ", deletedFiles)
