@@ -20,7 +20,7 @@ const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file 
 // 3번: 새로운 md파일의 링크를 추가
 mdFiles.forEach(file => {
   const date = file.substring(0, 10);
-  const title = decodeURIComponent(file.substring(11, filename.length - 3));
+  const title = decodeURIComponent(file.substring(11, file.length - 3));
   const newLink = `- [[${date}] ${title}](encodeURIComponent(https://github.com/${repository}/blob/main/${file}))\n`;
 
   if (!readmeContent.includes(newLink)) {
