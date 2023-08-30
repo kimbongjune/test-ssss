@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { execSync } = require('child_process');
 const { getOctokit } = require('@actions/github');
 
 const token = process.env.GITHUB_TOKEN;
