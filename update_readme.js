@@ -52,7 +52,7 @@ const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 // console.log("readmeContent",readmeContent)
 
-const changedFilesCommand = "git diff --name-only HEAD^ HEAD";
+const changedFilesCommand = "git diff-tree --no-commit-id --name-only -r HEAD";
 const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
 
 console.log("changedFilesCommand",changedFilesCommand)
@@ -61,7 +61,7 @@ console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
   console.log("file1",file)
-  if (file.endsWith('.md') && file !== 'README.md') {
+  if (file.includes('.md') && file !== 'README.md') {
     console.log("file2",file)
     const filePathParts = file.split('/');
     const fileName = filePathParts.pop();
