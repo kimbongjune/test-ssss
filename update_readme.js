@@ -1,10 +1,10 @@
 const fs = require('fs');
-const { GitHub } = require('@actions/github');
+const { getOctokit } = require('@actions/github');
 const core = require('@actions/core');
 
 const token = core.getInput('github_token');
 const repository = process.env.GITHUB_REPOSITORY;
-const octokit = GitHub.getOctokit(token);
+const octokit = getOctokit(token);
 
 let readmeContent = '';
 
