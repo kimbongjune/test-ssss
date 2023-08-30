@@ -48,44 +48,18 @@ changedFiles.forEach(file => {
         }
         linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})`;
     } else {
-        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+        linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     }
 
     // 파일이 삭제되었을 때
     if (eventData && eventData.head_commit.message.includes("Delete")) {
         const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
-    } 
-    // 파일이 추가되거나 변경되었을 때
-    else {
+    }else {
         if (!readmeContent.includes(linkToAdd)) {
             readmeContent += linkToAdd;
         }
     }
-    // if (dirName) {
-    //   console.log("상위 디렉토리 있음", dirName)
-    //   linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
-    // } else {
-    //   console.log("상위 디렉토리 없음")
-    //   linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
-    // }
-    
-    // console.log("linkToAdd",linkToAdd)
-    
-    // if (!readmeContent.includes(linkToAdd)) {
-    //   readmeContent += linkToAdd;
-    // }
-
-    // if(eventData && eventData.head_commit.message.includes("Delete")){
-    //   console.log("Delete")
-    //   if (dirName) {
-    //     console.log("상위 디렉토리 있음", dirName)
-    //   } else {
-    //     console.log("상위 디렉토리 없음")
-    //   }
-    //   const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    //   readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
-    // }
   }
 });
 
