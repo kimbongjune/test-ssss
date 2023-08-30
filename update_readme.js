@@ -23,7 +23,7 @@ if(eventData && eventData.head_commit.message.includes("Delete")){
     const deletedFile = eventData.head_commit.message.split(' ')[1];
     const date = deletedFile.split('_')[0];
     const title = deletedFile.split('_')[1].replace('.md', '');
-    const deletedLink = `\\[\\[${date}\\] ${title}\\]\\(https://github.com/${repository}/blob/main/${encodeURIComponent(eventData.head_commit.url)}\\)`;
+    const deletedLink = `\\[\\[${date}\\] ${title}\\]\\(https://github.com/${repository}/blob/main/${encodeURIComponent(deletedFile)}\\)`;
     const linkRegex = new RegExp(deletedLink, 'g');
     readmeContent = readmeContent.replace(linkRegex, '');
 }else{
