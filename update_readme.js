@@ -20,36 +20,66 @@ const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 console.log("eventData", eventData)
 
-if(eventData && eventData.head_commit.message.includes("Delete")){
-    const deletedFile = eventData.head_commit.message.replace("Delete ", "");
-    console.log("delete", deletedFile)
-    const date = deletedFile.split('_')[0];
-    const title = deletedFile.split('_')[1].replace('.md', '');
-    const linkFile = `${deletedFile}`
-    const encodedLinkFile = encodeURIComponent(linkFile)
-    const deletedLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${encodedLinkFile})`;
-    console.log("deletedLink", deletedLink)
-    const escapedStringToBeReplaced = deletedLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
-}else{
-    console.log("merge", eventData.head_commit.url)
-}
+// if(eventData && eventData.head_commit.message.includes("Delete")){
+//     const deletedFile = eventData.head_commit.message.replace("Delete ", "");
+//     console.log("delete", deletedFile)
+//     const date = deletedFile.split('_')[0];
+//     const title = deletedFile.split('_')[1].replace('.md', '');
+//     const linkFile = `${deletedFile}`
+//     const encodedLinkFile = encodeURIComponent(linkFile)
+//     const deletedLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${encodedLinkFile})`;
+//     console.log("deletedLink", deletedLink)
+//     const escapedStringToBeReplaced = deletedLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+//     readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
+// }else{
+//     console.log("merge", eventData.head_commit.url)
+// }
 
-const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
+// const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
-// 3번: 새로운 md파일의 링크를 추가
-mdFiles.forEach(file => {
-  const date = file.substring(0, 10);
-  const title = decodeURIComponent(file.substring(11, file.length - 3));
-  const linkFile = encodeURIComponent(file)
-  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+// // 3번: 새로운 md파일의 링크를 추가
+// mdFiles.forEach(file => {
+//   const date = file.substring(0, 10);
+//   const title = decodeURIComponent(file.substring(11, file.length - 3));
+//   const linkFile = encodeURIComponent(file)
+//   const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
 
-  if (!readmeContent.includes(newLink)) {
-    readmeContent += newLink;
+//   if (!readmeContent.includes(newLink)) {
+//     readmeContent += newLink;
+//   }
+// });
+
+// console.log("readmeContent",readmeContent)
+
+const changedFilesCommand = "git diff-tree --no-commit-id --name-only -r HEAD";
+const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
+
+changedFiles.forEach(file => {
+  if (file.endsWith('.md') && file !== 'README.md') {
+    const filePathParts = file.split('/');
+    const fileName = filePathParts.pop();
+    const dirName = filePathParts.join('/');
+    const date = fileName.substring(0, 10);
+    const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
+    const linkFile = encodeURIComponent(file);
+    
+    let linkToAdd;
+    if (dirName) {
+      linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+    } else {
+      linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+    }
+
+    if (!readmeContent.includes(linkToAdd)) {
+      readmeContent += linkToAdd;
+    }
+
+    if(eventData && eventData.head_commit.message.includes("Delete")){
+      const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
+    }
   }
 });
-
-console.log("readmeContent",readmeContent)
 
 // 5번: README.md 파일을 메인 브랜치에 바로 푸시
 fs.writeFileSync('README.md', readmeContent);
