@@ -52,7 +52,7 @@ const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 // console.log("readmeContent",readmeContent)
 
-const changedFilesCommand = "git diff-tree --no-commit-id --name-only -r HEAD";
+const changedFilesCommand = "git diff --name-only HEAD^ HEAD";
 const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
 
 console.log("changedFilesCommand",changedFilesCommand)
