@@ -17,6 +17,11 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Node
       uses: actions/setup-node@v2
+    - name: Determine deleted files
+      id: get_deleted_files
+      run: |
+        DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
+        echo "::set-output name=deleted_files::$DELETED_FILES"
     - run: npm install @actions/core @actions/github fs
     - name: Run script
       env:
