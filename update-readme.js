@@ -11,7 +11,7 @@ const isMergedMdFile = (filename) => {
 
 const generateLink = (filename) => {
   const date = filename.substring(0, 10);
-  const title = filename.substring(11, filename.length - 3).replace(/ /g, '%20');
+  const title = decodeURIComponent(filename.substring(11, filename.length - 3));
   return `- [[${date}] ${title}](https://github.com/${repoName}/blob/main/${filename.replace(/ /g, '%20')})`;
 };
 
