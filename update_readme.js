@@ -52,20 +52,16 @@ const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 // console.log("readmeContent",readmeContent)
 
-const changedFilesCommand = "git diff --name-only HEAD^ HEAD";
-const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
+//const changedFilesCommand = "git diff --name-only HEAD^ HEAD";
+const changedFilesCommand = "git -c core.quotepath=false diff --name-only HEAD^ HEAD";
+//const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
+const changedFiles = execSync(changedFilesCommand, { encoding: 'utf8' }).toString().trim().split('\n');
 
 console.log("changedFilesCommand",changedFilesCommand)
 
 console.log("changedFiles",changedFiles)
 
-const options = { encoding: 'buffer' };  // 버퍼로 받기
 
-const changedFilesBuffer = execSync(changedFilesCommand, options);
-const changedFilesString = changedFilesBuffer.toString('utf-8');  // 필요한 인코딩으로 변환
-const changedFilesToUtf8 = changedFilesString.trim().split('\n');
-
-console.log("changedFilesToUtf8",changedFilesToUtf8);
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
