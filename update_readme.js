@@ -5,6 +5,7 @@ const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
 const octokit = getOctokit(token);
 
+let sha;
 let readmeContent = '';
 
 // 6번: README가 없으면 생성
@@ -39,6 +40,13 @@ if (process.env.GITHUB_EVENT_NAME === 'delete') {
 fs.writeFileSync('README.md', readmeContent);
 
 (async () => {
+  const { data } = await octokit.rest.repos.getContent({
+    owner: repository.split('/')[0],
+    repo: repository.split('/')[1],
+    path: 'README.md',
+  });
+  sha = data.sha;
+  
   await octokit.rest.repos.createOrUpdateFileContents({
     owner: repository.split('/')[0],
     repo: repository.split('/')[1],
