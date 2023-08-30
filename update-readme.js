@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 
 const repoName = process.env.GITHUB_REPOSITORY;
 
-console.log('GITHUB_TOKEN:', process.env.GITHUB_TOKEN)
+console.log('GITHUB_TOKEN:', process.env.GITHUB_TOKEN);
 
 const isMergedMdFile = (filename) => {
   const regex = /^\d{4}-\d{2}-\d{2}_.*\.md$/;
@@ -43,6 +43,7 @@ fs.readdir('.', (err, filenames) => {
     execSync(`git config user.email "action@github.com"`);
     execSync(`git add ${readmePath}`);
     execSync(`git commit -m "Update README.md"`);
-    execSync(`git push https://${process.env.GITHUB_TOKEN}@github.com/${repoName}.git ${mainBranch}`);
+    execSync(`git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/${repoName}.git`);
+    execSync(`git push origin ${mainBranch}`);
   }
 });
