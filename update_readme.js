@@ -5,6 +5,9 @@ const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
 const octokit = getOctokit(token);
 
+console.log("token :",token)
+console.log("octokit :",octokit)
+
 let readmeContent = '';
 
 // 6번: README가 없으면 생성
