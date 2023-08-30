@@ -20,7 +20,7 @@ jobs:
     - name: Determine deleted files
       id: get_deleted_files
       run: |
-        DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
+        DELETED_FILES=$(git diff --name-only ${{ github.base_ref }} ${{ github.sha }} | tr '\n' ' ')
         echo "DELETED_FILES=$DELETED_FILES" >> $GITHUB_ENV
     - run: npm install @actions/core @actions/github fs
     - name: Run script
