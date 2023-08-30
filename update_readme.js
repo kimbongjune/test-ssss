@@ -44,6 +44,8 @@ if (process.env.GITHUB_EVENT_NAME === 'delete') {
 // 5번: README.md 파일을 메인 브랜치에 바로 푸시
 fs.writeFileSync('README.md', readmeContent);
 
+console.log("readmeContent",readmeContent)
+
 (async () => {
   const { data } = await octokit.rest.repos.getContent({
     owner: repository.split('/')[0],
