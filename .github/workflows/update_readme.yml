@@ -1,4 +1,4 @@
-name: Update README
+name: Update README.md
 
 on:
   push:
@@ -7,23 +7,23 @@ on:
       - '!README.md'
     branches:
       - main
-      
+  delete:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - '!README.md'
+
 jobs:
   update_readme:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Check out code
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    - name: Setup Node.js
+    - name: Setup Node
       uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-    
-    - name: Install Octokit
-      run: npm install @octokit/rest
-
-    - name: Update README.md
-      run: node update_readme.js
+    - run: npm install @actions/core @actions/github fs
+    - name: Run script
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: node .github/scripts/update_readme.js
