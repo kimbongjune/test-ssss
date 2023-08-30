@@ -1,39 +1,51 @@
 const fs = require('fs');
-const path = require('path');
-const { Octokit } = require("@octokit/rest");
+const { GitHub } = require('@actions/github');
+const core = require('@actions/core');
 
-const main = async () => {
-  const octokit = new Octokit();
-  const readmePath = path.join(__dirname, '/README.md');
-  let readmeContent = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf8') : '# Today I Learned(TIL)\n## 카테고리';
+const token = core.getInput('github_token');
+const repository = process.env.GITHUB_REPOSITORY;
+const octokit = GitHub.getOctokit(token);
 
-  const { data: commits } = await octokit.repos.listCommits({
-    owner: process.env.GITHUB_REPOSITORY.split('/')[0],
-    repo: process.env.GITHUB_REPOSITORY.split('/')[1]
+let readmeContent = '';
+
+// 6번: README가 없으면 생성
+if (fs.existsSync('README.md')) {
+  readmeContent = fs.readFileSync('README.md', 'utf8');
+} else {
+  readmeContent = '# Today I Learned(TIL)\n## 카테고리\n';
+}
+
+const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
+
+// 3번: 새로운 md파일의 링크를 추가
+mdFiles.forEach(file => {
+  const date = file.split('_')[0];
+  const title = encodeURIComponent(file.split('_')[1].replace('.md', ''));
+  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${file})\n`;
+
+  if (!readmeContent.includes(newLink)) {
+    readmeContent += newLink;
+  }
+});
+
+// 7번: 삭제된 md파일의 링크를 제거
+if (process.env.GITHUB_EVENT_NAME === 'delete') {
+  const deletedFile = process.env.GITHUB_EVENT_PATHS;
+  const deletedLink = `- [[${deletedFile.split('_')[0]}] ${encodeURIComponent(deletedFile.split('_')[1].replace('.md', ''))}]`;
+  const linkRegex = new RegExp(`.*${deletedLink}.*\n`);
+  readmeContent = readmeContent.replace(linkRegex, '');
+}
+
+// 5번: README.md 파일을 메인 브랜치에 바로 푸시
+fs.writeFileSync('README.md', readmeContent);
+
+(async () => {
+  await octokit.repos.createOrUpdateFileContents({
+    owner: repository.split('/')[0],
+    repo: repository.split('/')[1],
+    path: 'README.md',
+    message: 'Automatically updated README.md',
+    content: Buffer.from(readmeContent).toString('base64'),
+    branch: 'main',
   });
-
-  const changedFiles = commits[0].files;
-  const changedMdFiles = changedFiles.filter(file => file.filename.endsWith('.md') && file.filename !== 'README.md');
-
-  changedMdFiles.forEach(file => {
-    const isDeletedInMainBranch = file.status === 'removed';
-    const fileName = file.filename;
-    const date = fileName.split('_')[0];
-    const title = fileName.split('_')[1].replace('.md', '').replace(/ /g, '%20');
-    const link = `- [[${date}] ${title}](https://github.com/${process.env.GITHUB_REPOSITORY}/blob/main/${fileName})`;
-
-    if (isDeletedInMainBranch) {
-      if (readmeContent.includes(link)) {
-        readmeContent = readmeContent.replace(link, '');
-      }
-    } else {
-      if (!readmeContent.includes(link)) {
-        readmeContent += '\n' + link;
-      }
-    }
-  });
-
-  fs.writeFileSync(readmePath, readmeContent);
-};
-
-main();
+})();
