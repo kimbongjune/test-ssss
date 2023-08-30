@@ -70,12 +70,28 @@ changedFiles.forEach(file => {
     const linkFile = encodeURIComponent(file);
     
     let linkToAdd;
+    // if (dirName) {
+    //   console.log("상위 디렉토리 있음", dirName)
+    //   linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+    // } else {
+    //   console.log("상위 디렉토리 없음")
+    //   linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+    // }
+
     if (dirName) {
-      console.log("상위 디렉토리 있음", dirName)
-      linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+        console.log("상위 디렉토리 있음", dirName);
+        const dirs = dirName.split('/');
+        for (let i = 0; i < dirs.length; i++) {
+            const currentDir = dirs[i];
+            if (!readmeContent.includes(`- ${currentDir}\n`)) {
+                linkToAdd += `- ${currentDir}\n`;
+            }
+            linkToAdd += '\t'.repeat(i + 1);
+        }
+        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})`;
     } else {
-      console.log("상위 디렉토리 없음")
-      linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+        console.log("상위 디렉토리 없음");
+        linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     }
 
     console.log("linkToAdd",linkToAdd)
