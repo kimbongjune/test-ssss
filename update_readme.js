@@ -54,5 +54,6 @@ fs.writeFileSync('README.md', readmeContent);
     message: 'Automatically updated README.md',
     content: Buffer.from(readmeContent).toString('base64'),
     branch: 'main',
+    sha: sha
   });
 })();
