@@ -43,7 +43,6 @@ fs.readdir('.', (err, filenames) => {
     execSync(`git config user.email "action@github.com"`);
     execSync(`git add ${readmePath}`);
     execSync(`git commit -m "Update README.md"`);
-    execSync(`git remote set-url origin https://${process.env.GITHUB_TOKEN}@github.com/${repoName}.git`);
-    execSync(`git push origin ${mainBranch}`);
+    execSync(`git push https://${process.env.GITHUB_TOKEN}@github.com/${repoName}.git ${mainBranch}`);
   }
 });
