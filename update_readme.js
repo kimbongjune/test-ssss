@@ -24,6 +24,8 @@ if (eventData && eventData.action === 'deleted') {
   console.log('This is a push operation.');
 }
 
+console.log("eventData",eventData)
+
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
 // 3번: 새로운 md파일의 링크를 추가
@@ -37,10 +39,6 @@ mdFiles.forEach(file => {
     readmeContent += newLink;
   }
 });
-
-if (process.env.GITHUB_EVENT_NAME === 'push') {
-  console.log("push")
-}
 
 // 7번: 삭제된 md파일의 링크를 제거
 if (process.env.GITHUB_EVENT_NAME === 'delete') {
