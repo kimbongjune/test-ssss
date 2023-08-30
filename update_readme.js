@@ -27,8 +27,7 @@ if(eventData && eventData.head_commit.message.includes("Delete")){
     const encodedLinkFile = encodeURIComponent(linkFile)
     const deletedLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${encodedLinkFile})`;
     console.log("deletedLink", deletedLink)
-    const linkRegex = new RegExp(deletedLink, 'g');
-    readmeContent = readmeContent.replace(linkRegex, '');
+    readmeContent = readmeContent.replace(deletedLink, '');
 }else{
     console.log("merge", eventData.head_commit.url)
 }
