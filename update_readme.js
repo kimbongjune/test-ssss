@@ -46,9 +46,9 @@ changedFiles.forEach(file => {
             }
             linkToAdd += '\t'.repeat(i + 1);
         }
-        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})`;
+        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     } else {
-        linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+        linkToAdd += `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     }
 
     // 파일이 삭제되었을 때
