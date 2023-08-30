@@ -8,28 +8,64 @@ on:
       - main
 
 jobs:
-  update_readme:
+  update-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-      - name: Install dependencies
-        run: pip install PyGithub
+    - name: Update README.md
+      run: |
+        const fs = require('fs');
+        const path = require('path');
+        const repoName = process.env.GITHUB_REPOSITORY;
 
-      - name: Run Python Script
-        run: python update_readme.py
+        const isMergedMdFile = (filename) => {
+          const regex = /^\d{4}-\d{2}-\d{2}_.*\.md$/;
+          return regex.test(filename);
+        };
 
-      - name: Commit changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add README.md
-          git commit -m "Update README.md" || exit 0
-          git push
+        const generateLink = (filename) => {
+          const date = filename.substring(0, 10);
+          const title = filename.substring(11, filename.length - 3).replace(/ /g, '%20');
+          return `- [[${date}] ${title}](https://github.com/${repoName}/blob/main/${filename.replace(/ /g, '%20')})`;
+        };
+
+        const mainBranch = 'main';
+        const readmePath = path.join(__dirname, 'README.md');
+
+        fs.readdir('.', (err, filenames) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+
+          const mergedMdFiles = filenames.filter(isMergedMdFile);
+
+          if (mergedMdFiles.length > 0) {
+            let readmeContent = fs.readFileSync(readmePath, 'utf8');
+            mergedMdFiles.forEach((filename) => {
+              const link = generateLink(filename);
+              if (!readmeContent.includes(link)) {
+                readmeContent += `\n${link}`;
+              }
+            });
+
+            fs.writeFileSync(readmePath, readmeContent, 'utf8');
+
+            const exec = require('child_process').exec;
+            exec(`git config user.name "GitHub Action"`);
+            exec(`git config user.email "action@github.com"`);
+            exec(`git add ${readmePath}`);
+            exec(`git commit -m "Update README.md"`);
+            exec(`git push origin ${mainBranch}`);
+          }
+        });
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
