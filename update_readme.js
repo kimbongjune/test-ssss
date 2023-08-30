@@ -21,7 +21,7 @@ const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file 
 mdFiles.forEach(file => {
   const date = file.substring(0, 10);
   const title = decodeURIComponent(file.substring(11, file.length - 3));
-  const newLink = `- [[${date}] ${title}](encodeURIComponent(https://github.com/${repository}/blob/main/${file}))\n`;
+  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${file})\n`;
 
   if (!readmeContent.includes(newLink)) {
     readmeContent += newLink;
