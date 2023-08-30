@@ -25,7 +25,7 @@ if (eventData && eventData.action === 'deleted') {
 }
 
 const deletedFiles = process.env.DELETED_FILES;
-console.log(deletedFiles)
+console.log("deletedFiles : ", deletedFiles)
 
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
