@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # 이 부분 추가
+          fetch-depth: 2  # 이 부분은 git diff를 사용하기 위해 필요합니다.
 
       - name: Set up Node
         uses: actions/setup-node@v1
