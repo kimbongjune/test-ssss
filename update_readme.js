@@ -59,9 +59,11 @@ console.log("changedFilesCommand",changedFilesCommand)
 
 console.log("changedFiles",changedFiles)
 
-const options = { encoding: 'utf-8' };  // 인코딩을 명시적으로 설정
+const options = { encoding: 'buffer' };  // 버퍼로 받기
 
-const changedFilesToUtf8 = execSync(changedFilesCommand, options).trim().split('\n');
+const changedFilesBuffer = execSync(changedFilesCommand, options);
+const changedFilesString = changedFilesBuffer.toString('utf-8');  // 필요한 인코딩으로 변환
+const changedFilesToUtf8 = changedFilesString.trim().split('\n');
 
 console.log("changedFilesToUtf8",changedFilesToUtf8);
 
