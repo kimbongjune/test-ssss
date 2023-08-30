@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # 이 부분 추가
 
       - name: Set up Node
         uses: actions/setup-node@v1
