@@ -20,9 +20,6 @@ const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 console.log(eventData)
 
-const deletedFiles = process.env.DELETED_FILES;
-console.log("deletedFiles : ", deletedFiles)
-
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
 // 3번: 새로운 md파일의 링크를 추가
