@@ -21,9 +21,10 @@ jobs:
       id: get_deleted_files
       run: |
         DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
-        echo "::set-output name=deleted_files::$DELETED_FILES"
+        echo "DELETED_FILES=$DELETED_FILES" >> $GITHUB_ENV
     - run: npm install @actions/core @actions/github fs
     - name: Run script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        DELETED_FILES: ${{ env.DELETED_FILES }}
       run: node update_readme.js
