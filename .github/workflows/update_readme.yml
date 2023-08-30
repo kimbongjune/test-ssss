@@ -11,7 +11,6 @@ on:
 jobs:
   update_readme:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
     - name: Check out code
       uses: actions/checkout@v2
