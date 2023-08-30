@@ -2,7 +2,7 @@ const fs = require('fs');
 const { getOctokit } = require('@actions/github');
 const core = require('@actions/core');
 
-const token = core.getInput('github_token');
+const token = core.getInput('GITHUB_TOKEN');
 const repository = process.env.GITHUB_REPOSITORY;
 const octokit = getOctokit(token);
 
