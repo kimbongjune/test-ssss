@@ -21,15 +21,13 @@ const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file 
 mdFiles.forEach(file => {
   const date = file.substring(0, 10);
   const title = decodeURIComponent(file.substring(11, file.length - 3));
-  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${file})\n`;
+  const linkFile = encodeURIComponent(file)
+  const newLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
 
   if (!readmeContent.includes(newLink)) {
     readmeContent += newLink;
   }
 });
-
-console.log("process.env.GITHUB_EVENT_NAME", process.env.GITHUB_EVENT_NAME)
-console.log("process.env", process.env)
 
 if (process.env.GITHUB_EVENT_NAME === 'push') {
   console.log("push")
