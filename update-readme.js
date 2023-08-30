@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const exec = require('child_process').exec;
+const { execSync } = require('child_process');
 
 const repoName = process.env.GITHUB_REPOSITORY;
 
@@ -37,10 +37,10 @@ fs.readdir('.', (err, filenames) => {
 
     fs.writeFileSync(readmePath, readmeContent, 'utf8');
 
-    exec(`git config user.name "GitHub Action"`);
-    exec(`git config user.email "action@github.com"`);
-    exec(`git add ${readmePath}`);
-    exec(`git commit -m "Update README.md"`);
-    exec(`git push origin ${mainBranch}`);
+    execSync(`git config user.name "GitHub Action"`);
+    execSync(`git config user.email "action@github.com"`);
+    execSync(`git add ${readmePath}`);
+    execSync(`git commit -m "Update README.md"`);
+    execSync(`git push origin ${mainBranch}`);
   }
 });
