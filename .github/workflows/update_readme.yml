@@ -26,4 +26,4 @@ jobs:
       run: npm install @octokit/rest
 
     - name: Update README.md
-      run: node .github/scripts/update_readme.js
+      run: node update_readme.js
