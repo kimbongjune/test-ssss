@@ -28,6 +28,9 @@ mdFiles.forEach(file => {
   }
 });
 
+console.log("process.env.GITHUB_EVENT_NAME", process.env.GITHUB_EVENT_NAME)
+console.log("process.env", process.env)
+
 if (process.env.GITHUB_EVENT_NAME === 'push') {
   console.log("push")
 }
