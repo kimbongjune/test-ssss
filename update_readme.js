@@ -18,7 +18,7 @@ if (fs.existsSync('README.md')) {
 const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
-if(eventData && eventData.head_commit.message.includes("delete")){
+if(eventData && eventData.head_commit.message.includes("Delete")){
     console.log("delete", eventData.head_commit.url)
 }else{
     console.log("merge", eventData.head_commit.url)
