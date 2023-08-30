@@ -60,7 +60,9 @@ console.log("changedFilesCommand",changedFilesCommand)
 console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
+  console.log("file1",file)
   if (file.endsWith('.md') && file !== 'README.md') {
+    console.log("file2",file)
     const filePathParts = file.split('/');
     const fileName = filePathParts.pop();
     const dirName = filePathParts.join('/');
