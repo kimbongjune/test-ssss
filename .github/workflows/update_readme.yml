@@ -9,32 +9,21 @@ on:
       - main
 
 jobs:
-  check-deleted-files:
+  update_readme:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repository
+    - name: Check out code
       uses: actions/checkout@v2
-
-    - name: List Deleted Files
-      id: deleted-files
-      run: |
-        LAST_COMMIT=$(git rev-parse HEAD^)
-        DELETED_FILES=$(git diff-tree --no-commit-id --name-only -r $LAST_COMMIT ${{ github.sha }} | grep -E '^.*\.md$' || true)
-        echo "::set-output name=deleted-files::$DELETED_FILES"
-
-    - name: Set Environment Variable
-      if: steps.deleted-files.outputs.deleted-files != ''
-      run: |
-        echo "DELETED_FILES=${{ steps.deleted-files.outputs.deleted-files }}" >> $GITHUB_ENV
-
     - name: Setup Node
       uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Adjust the Node.js version as needed
-
-    - name: Run Node.js Script
+    - name: Determine deleted files
+      id: get_deleted_files
+      run: |
+        DELETED_FILES=$(git diff --name-only ${{ github.base_ref }} ${{ github.sha }} | tr '\n' ' ')
+        echo "DELETED_FILES=$DELETED_FILES" >> $GITHUB_ENV
+    - run: npm install @actions/core @actions/github fs
+    - name: Run script
       env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         DELETED_FILES: ${{ env.DELETED_FILES }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: node update_readme.js
