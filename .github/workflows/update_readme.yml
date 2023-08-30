@@ -45,7 +45,8 @@ jobs:
             sed -i "/\[\[$link_text\].*\]/d" README.md
           fi
           
-          # 링크 추가
+          # 링크 추가 (띄어쓰기와 특수문자를 URL 인코딩하여 처리)
+          encoded_file_name=$(urlencode "$file_name")
           echo "- [[${file_name:0:10}] ${file_name:11:${#file_name}-14}]($file_link)" >> README.md
           
           # Git 설정 및 변경 내용 커밋
