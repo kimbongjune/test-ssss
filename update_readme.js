@@ -24,7 +24,8 @@ if (eventData && eventData.action === 'deleted') {
   console.log('This is a push operation.');
 }
 
-console.log("eventData",eventData)
+const deletedFiles = process.env.DELETED_FILES;
+console.log(deletedFiles)
 
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
