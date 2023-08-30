@@ -36,7 +36,7 @@ changedFiles.forEach(file => {
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
     const linkFile = encodeURIComponent(file);
     
-    let linkToAdd;
+    let linkToAdd = ""
     // 파일이 삭제되지 않았을 경우에만 linkToAdd 생성
     if (!(eventData && eventData.head_commit.message.includes("Delete"))) {
         if (dirName) {
