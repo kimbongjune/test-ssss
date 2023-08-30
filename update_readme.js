@@ -42,7 +42,7 @@ if (process.env.GITHUB_EVENT_NAME === 'delete') {
 fs.writeFileSync('README.md', readmeContent);
 
 (async () => {
-  await octokit.repos.createOrUpdateFileContents({
+  await octokit.rest.repos.createOrUpdateFileContents({
     owner: repository.split('/')[0],
     repo: repository.split('/')[1],
     path: 'README.md',
