@@ -58,31 +58,23 @@ const changedFilesCommand = "git -c core.quotepath=false diff --name-only HEAD^ 
 const changedFiles = execSync(changedFilesCommand, { encoding: 'utf8' }).toString().trim().split('\n');
 
 console.log("changedFilesCommand",changedFilesCommand)
-
 console.log("changedFiles",changedFiles)
-
-
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
-    console.log("file",file)
     const filePathParts = file.replace(/"/g, '').split('/');
-    console.log("filePathParts",filePathParts)
     const fileName = filePathParts.pop();
-    console.log("fileName",fileName)
     const dirName = filePathParts.join('/');
-    console.log("dirName",dirName)
     const date = fileName.substring(0, 10);
-    console.log("dirName",date)
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
-    console.log("title",title)
     const linkFile = encodeURIComponent(file);
-    console.log("linkFile",linkFile)
     
     let linkToAdd;
     if (dirName) {
+      console.log("상위 디렉토리 있음", dirName)
       linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     } else {
+      console.log("상위 디렉토리 없음")
       linkToAdd = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
     }
 
@@ -94,6 +86,11 @@ changedFiles.forEach(file => {
 
     if(eventData && eventData.head_commit.message.includes("Delete")){
       console.log("Delete")
+      if (dirName) {
+        console.log("상위 디렉토리 있음", dirName)
+      } else {
+        console.log("상위 디렉토리 없음")
+      }
       const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
     }
