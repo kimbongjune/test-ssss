@@ -9,15 +9,31 @@ on:
       - main
 
 jobs:
-  update_readme:
+  check-deleted-files:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Check out code
+    - name: Checkout Repository
       uses: actions/checkout@v2
+
+    - name: List Deleted Files
+      id: deleted-files
+      run: |
+        DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^.*\.md$')
+        echo "::set-output name=deleted-files::$DELETED_FILES"
+
+    - name: Set Environment Variable
+      if: steps.deleted-files.outputs.deleted-files != ''
+      run: |
+        echo "DELETED_FILES=${{ steps.deleted-files.outputs.deleted-files }}" >> $GITHUB_ENV
+
     - name: Setup Node
       uses: actions/setup-node@v2
-    - run: npm install @actions/core @actions/github fs
-    - name: Run script
+      with:
+        node-version: '14'  # Adjust the Node.js version as needed
+
+    - name: Run Node.js Script
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        DELETED_FILES: ${{ env.DELETED_FILES }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: node update_readme.js
