@@ -16,19 +16,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Node
       uses: actions/setup-node@v2
-    - name: List Deleted Files
-      id: deleted-files
-      run: |
-        DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-        echo "::set-output name=deleted-files::$DELETED_FILES"
-
-    - name: Set Environment Variable
-      if: steps.deleted-files.outputs.deleted-files != ''
-      run: |
-        echo "DELETED_FILES=${{ steps.deleted-files.outputs.deleted-files }}" >> $GITHUB_ENV
     - run: npm install @actions/core @actions/github fs
     - name: Run script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        DELETED_FILES: ${{ env.DELETED_FILES }}
       run: node update_readme.js
