@@ -15,6 +15,8 @@ if (fs.existsSync('README.md')) {
   readmeContent = '# Today I Learned(TIL)\n## 카테고리\n';
 }
 
+console.log("process.env)", process.env)
+
 const mdFiles = fs.readdirSync('.').filter(file => file.endsWith('.md') && file !== 'README.md');
 
 // 3번: 새로운 md파일의 링크를 추가
