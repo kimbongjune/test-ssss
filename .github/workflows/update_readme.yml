@@ -19,10 +19,8 @@ jobs:
     - name: List Deleted Files
       id: deleted-files
       run: |
-        git log -1 --format=%h > last_commit.txt
-        LAST_COMMIT=$(cat last_commit.txt)
-        git diff-tree --no-commit-id --name-only -r $LAST_COMMIT ${{ github.sha }} | grep -E '^.*\.md$' > deleted_files.txt
-        DELETED_FILES=$(cat deleted_files.txt)
+        LAST_COMMIT=$(git rev-parse HEAD^)
+        DELETED_FILES=$(git diff-tree --no-commit-id --name-only -r $LAST_COMMIT ${{ github.sha }} | grep -E '^.*\.md$' || true)
         echo "::set-output name=deleted-files::$DELETED_FILES"
 
     - name: Set Environment Variable
