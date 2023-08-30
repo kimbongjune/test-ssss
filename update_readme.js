@@ -19,11 +19,12 @@ const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 if(eventData && eventData.head_commit.message.includes("Delete")){
-    console.log("delete", eventData.head_commit.url)
     const deletedFile = eventData.head_commit.message.split(' ')[1];
+    console.log("delete", deletedFile)
     const date = deletedFile.split('_')[0];
     const title = deletedFile.split('_')[1].replace('.md', '');
     const deletedLink = `\\[\\[${date}\\] ${title}\\]\\(https://github.com/${repository}/blob/main/${encodeURIComponent(deletedFile)}\\)`;
+  console.log("deletedLink", deletedLink)
     const linkRegex = new RegExp(deletedLink, 'g');
     readmeContent = readmeContent.replace(linkRegex, '');
 }else{
