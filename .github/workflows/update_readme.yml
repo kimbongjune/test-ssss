@@ -7,12 +7,6 @@ on:
       - '!README.md'
     branches:
       - main
-  delete:
-    branches:
-      - main
-    paths:
-      - '**.md'
-      - '!README.md'
 
 jobs:
   update_readme:
