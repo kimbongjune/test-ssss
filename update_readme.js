@@ -23,7 +23,7 @@ if(eventData && eventData.head_commit.message.includes("Delete")){
     console.log("delete", deletedFile)
     const date = deletedFile.split('_')[0];
     const title = deletedFile.split('_')[1].replace('.md', '');
-    const linkFile = `${deletedFile[0]}_${deletedFile[1]}`
+    const linkFile = `${deletedFile}`
     const encodedLinkFile = encodeURIComponent(linkFile)
     const deletedLink = `- [[${date}] ${title}](https://github.com/${repository}/blob/main/${encodedLinkFile})`;
     console.log("deletedLink", deletedLink)
