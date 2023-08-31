@@ -44,7 +44,7 @@ changedFiles.forEach(file => {
         const dirs = dirName.split('/');
         for (let i = 0; i < dirs.length; i++) {
             const currentDir = dirs[i];
-            if (!readmeContent.includes(`- ${currentDir}\n`)) {
+            if (!readmeContent.includes(`- ${currentDir}\n`) || filePreffix == "D") {
                 linkToAdd += `- ${currentDir}\n`;
             }
             linkToAdd += '\t'.repeat(i + 1);
