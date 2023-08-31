@@ -20,7 +20,7 @@ const githubEventPath = process.env['GITHUB_EVENT_PATH']
 const eventData = JSON.parse(fs.readFileSync(githubEventPath, 'utf-8'))
 
 //const changedFilesCommand = "git diff --name-only HEAD^ HEAD";
-const changedFilesCommand = "git -c core.quotepath=false diff --name-only HEAD^ HEAD";
+const changedFilesCommand = "git -c core.quotepath=false diff --name-status HEAD^ HEAD";
 //const changedFiles = execSync(changedFilesCommand).toString().trim().split('\n');
 const changedFiles = execSync(changedFilesCommand, { encoding: 'utf8' }).toString().trim().split('\n');
 
@@ -29,6 +29,7 @@ console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
+    const file = file.split(" ")[1]
     const filePathParts = file.replace(/"/g, '').split('/');
     const fileName = filePathParts.pop();
     const dirName = filePathParts.join('/');
