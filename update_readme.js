@@ -65,6 +65,7 @@ changedFiles.forEach(file => {
     }else{
         //파일 수정
     }
+    console.log(linkToAdd)
   }
 });
 
