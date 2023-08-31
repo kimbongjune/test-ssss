@@ -29,6 +29,7 @@ console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
+    const filePreffix = file.split("\t")[0]
     const fileSuffix = file.split("\t")[1]
     console.log(fileSuffix)
     const filePathParts = fileSuffix.replace(/"/g, '').split('/');
@@ -54,13 +55,15 @@ changedFiles.forEach(file => {
     }
 
     // 파일이 삭제되었을 때
-    if (eventData && eventData.head_commit.message.includes("Delete")) {
+    if (filePreffix == "D") {
         const escapedStringToBeReplaced = linkToAdd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         readmeContent = readmeContent.replace(new RegExp(escapedStringToBeReplaced, 'g'), '');
-    }else {
+    }else if(filePreffix == "A"){
         if (!readmeContent.includes(linkToAdd)) {
             readmeContent += linkToAdd;
         }
+    }else{
+        //파일 수정
     }
   }
 });
