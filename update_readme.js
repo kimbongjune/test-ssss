@@ -29,13 +29,13 @@ console.log("changedFiles",changedFiles)
 
 changedFiles.forEach(file => {
   if (file.includes('.md') && file !== 'README.md') {
-    const file = file.split(" ")[1]
-    const filePathParts = file.replace(/"/g, '').split('/');
+    const fileSuffix = file.split(" ")[1]
+    const filePathParts = fileSuffix.replace(/"/g, '').split('/');
     const fileName = filePathParts.pop();
     const dirName = filePathParts.join('/');
     const date = fileName.substring(0, 10);
     const title = decodeURIComponent(fileName.substring(11, fileName.length - 3));
-    const linkFile = encodeURIComponent(file);
+    const linkFile = encodeURIComponent(fileSuffix);
     
     let linkToAdd = "";
     if (dirName) {
