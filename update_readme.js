@@ -17,7 +17,7 @@ async function fetchGithubRepoStructure() {
   let dirTree = {};
 
   for (const item of data.tree) {
-    if (item.path.startsWith('.github')) continue;
+    if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
 
     let subDir = dirTree;
     const splitPath = item.path.split('/');
@@ -41,18 +41,18 @@ async function fetchGithubRepoStructure() {
     }
   }
 
-  function treeToString(tree, depth = 0) {
+  function treeToString(tree, depth = 0, prefix = '') {
     let output = '';
     for (const [key, value] of Object.entries(tree)) {
-      if (key === 'README.md' || key === 'update_readme.js') continue;
       const indent = '  '.repeat(depth);
+      const fullPath = prefix ? `${prefix}/${key}` : key;
+
       if (value === null) {
         output += `${indent}- ${key}\n`;
       } else if (value.date && value.title) {
-        const linkFile = encodeURIComponent(key);
-        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
+        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(fullPath)})\n`;
       } else {
-        output += `${indent}- ${key}\n${treeToString(value, depth + 1)}`;
+        output += `${indent}- ${key}\n${treeToString(value, depth + 1, fullPath)}`;
       }
     }
     return output;
