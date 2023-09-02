@@ -12,7 +12,7 @@ function fetchStructure(dir, gitTrackedFiles) {
   
   const files = fs.readdirSync(dir);
   for (const file of files) {
-    if (file === '.git' || file === 'node_modules') continue;
+    if (file === '.git' || file === 'node_modules' || file === '.github') continue;
     const filePath = path.join(dir, file).replace(/\\/g, '/');
     const relativePath = filePath.replace(/^\.\//, '');
     
