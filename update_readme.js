@@ -9,6 +9,8 @@ async function fetchGithubRepoStructure() {
     let output = "";
 
     for (const item of data.tree) {
+      if (item.path.startsWith('.github')) continue;
+      
       const splitPath = item.path.split('/');
       let subDir = directories;
 
