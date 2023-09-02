@@ -49,7 +49,8 @@ async function fetchGithubRepoStructure() {
       if (value === null) {
         output += `${indent}- ${key}\n`;
       } else if (value.date && value.title) {
-        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${key})\n`;
+        const linkFile = encodeURIComponent(key);
+        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${linkFile})\n`;
       } else {
         output += `${indent}- ${key}\n${treeToString(value, depth + 1)}`;
       }
