@@ -44,6 +44,7 @@ async function fetchGithubRepoStructure() {
   function treeToString(tree, depth = 0) {
     let output = '';
     for (const [key, value] of Object.entries(tree)) {
+      if (key === 'README.md' || key === 'update_readme.js') continue;
       const indent = '  '.repeat(depth);
       if (value === null) {
         output += `${indent}- ${key}\n`;
