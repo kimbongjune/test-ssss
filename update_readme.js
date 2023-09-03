@@ -15,30 +15,28 @@ async function fetchGithubRepoStructure() {
   });
 
   let dirTree = {};
-  let unCategorized = {};
+  let unCategorized = [];
 
   for (const item of data.tree) {
     if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
 
-    let subDir = item.path.includes('/') ? dirTree : unCategorized;
-    const splitPath = item.path.split('/');
-    for (let i = 0; i < splitPath.length; i++) {
-      const part = splitPath[i];
-      if (!subDir[part]) {
-        if (i === splitPath.length - 1 && item.type === 'blob') {
-          const mdName = part.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
-          if (mdName) {
-            const date = mdName[1];
-            const title = mdName[2];
-            subDir[part] = { date, title };
-          } else {
-            subDir[part] = null;
-          }
-        } else {
+    if (item.path.includes('/')) {
+      let subDir = dirTree;
+      const splitPath = item.path.split('/');
+      for (let i = 0; i < splitPath.length; i++) {
+        const part = splitPath[i];
+        if (!subDir[part]) {
           subDir[part] = {};
         }
+        subDir = subDir[part];
       }
-      subDir = subDir[part];
+    } else if (item.type === 'blob') {
+      const mdName = item.path.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
+      if (mdName) {
+        const date = mdName[1];
+        const title = mdName[2];
+        unCategorized.push({ path: item.path, date, title });
+      }
     }
   }
 
@@ -47,14 +45,7 @@ async function fetchGithubRepoStructure() {
     for (const [key, value] of Object.entries(tree)) {
       const indent = '  '.repeat(depth);
       const fullPath = prefix ? `${prefix}/${key}` : key;
-
-      if (value === null) {
-        output += `${indent}- ${key}\n`;
-      } else if (value.date && value.title) {
-        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(fullPath)})\n`;
-      } else {
-        output += `${indent}- ${key}\n${treeToString(value, depth + 1, fullPath)}`;
-      }
+      output += `${indent}- ${key}\n${treeToString(value, depth + 1, fullPath)}`;
     }
     return output;
   }
@@ -75,7 +66,9 @@ async function fetchGithubRepoStructure() {
   readmeContent += treeToString(dirTree);
 
   readmeContent += '\n## 미분류\n';
-  readmeContent += treeToString(unCategorized);
+  for (const item of unCategorized) {
+    readmeContent += `- 📄[[${item.date}] ${item.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(item.path)})\n`;
+  }
 
   let sha;
   try {
