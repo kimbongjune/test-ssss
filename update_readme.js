@@ -19,9 +19,19 @@ async function fetchGithubRepoStructure() {
 
   for (const item of data.tree) {
     if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
+    
+    const splitPath = item.path.split('/');
+    if (splitPath.length === 1 && item.type === 'blob') {
+      const mdName = item.path.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
+      if (mdName) {
+        const date = mdName[1];
+        const title = mdName[2];
+        unCategorized.push({ path: item.path, date, title });
+      }
+      continue; // Skip adding to dirTree for root files
+    }
 
     let subDir = dirTree;
-    const splitPath = item.path.split('/');
     for (let i = 0; i < splitPath.length; i++) {
       const part = splitPath[i];
       if (!subDir[part]) {
@@ -39,14 +49,6 @@ async function fetchGithubRepoStructure() {
         }
       }
       subDir = subDir[part];
-    }
-    if (splitPath.length === 1 && item.type === 'blob') {
-      const mdName = item.path.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
-      if (mdName) {
-        const date = mdName[1];
-        const title = mdName[2];
-        unCategorized.push({ path: item.path, date, title });
-      }
     }
   }
 
