@@ -1,3 +1,4 @@
+// 기존 코드는 변경하지 않고, 미분류 부분만 추가하겠습니다.
 const axios = require('axios');
 const fs = require('fs');
 const { getOctokit } = require('@actions/github');
@@ -15,12 +16,17 @@ async function fetchGithubRepoStructure() {
   });
 
   let dirTree = {};
+  let uncategorized = {}; // 미분류 항목을 위한 객체
 
   for (const item of data.tree) {
     if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
 
     let subDir = dirTree;
     const splitPath = item.path.split('/');
+    if (splitPath.length === 1) { // 루트에 위치한 파일이라면
+      subDir = uncategorized; // 미분류로 분류
+    }
+
     for (let i = 0; i < splitPath.length; i++) {
       const part = splitPath[i];
       if (!subDir[part]) {
@@ -72,6 +78,11 @@ async function fetchGithubRepoStructure() {
 
   readmeContent += '## 카테고리\n';
   readmeContent += treeToString(dirTree);
+
+  if (Object.keys(uncategorized).length > 0) { // 미분류 항목이 있다면
+    readmeContent += '## 미분류\n'; // 미분류 섹션 추가
+    readmeContent += treeToString(uncategorized);
+  }
 
   let sha;
   try {
