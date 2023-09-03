@@ -20,17 +20,27 @@ async function fetchGithubRepoStructure() {
   for (const item of data.tree) {
     if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
 
-    if (item.path.includes('/')) {
-      let subDir = dirTree;
-      const splitPath = item.path.split('/');
-      for (let i = 0; i < splitPath.length; i++) {
-        const part = splitPath[i];
-        if (!subDir[part]) {
+    let subDir = dirTree;
+    const splitPath = item.path.split('/');
+    for (let i = 0; i < splitPath.length; i++) {
+      const part = splitPath[i];
+      if (!subDir[part]) {
+        if (i === splitPath.length - 1 && item.type === 'blob') {
+          const mdName = part.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
+          if (mdName) {
+            const date = mdName[1];
+            const title = mdName[2];
+            subDir[part] = { date, title };
+          } else {
+            subDir[part] = null;
+          }
+        } else {
           subDir[part] = {};
         }
-        subDir = subDir[part];
       }
-    } else if (item.type === 'blob') {
+      subDir = subDir[part];
+    }
+    if (splitPath.length === 1 && item.type === 'blob') {
       const mdName = item.path.match(/(\d{4}-\d{2}-\d{2})_(.*).md$/);
       if (mdName) {
         const date = mdName[1];
@@ -45,7 +55,14 @@ async function fetchGithubRepoStructure() {
     for (const [key, value] of Object.entries(tree)) {
       const indent = '  '.repeat(depth);
       const fullPath = prefix ? `${prefix}/${key}` : key;
-      output += `${indent}- ${key}\n${treeToString(value, depth + 1, fullPath)}`;
+
+      if (value === null) {
+        output += `${indent}- ${key}\n`;
+      } else if (value.date && value.title) {
+        output += `${indent}- 📄[[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(fullPath)})\n`;
+      } else {
+        output += `${indent}- 📂${key}\n${treeToString(value, depth + 1, fullPath)}`;
+      }
     }
     return output;
   }
