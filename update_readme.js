@@ -15,19 +15,13 @@ async function fetchGithubRepoStructure() {
   });
 
   let dirTree = {};
-  let uncategorizedFiles = {};
+  let unCategorized = {};
 
   for (const item of data.tree) {
     if (item.path.startsWith('.github') || item.path === 'README.md' || item.path === 'update_readme.js') continue;
 
-    let subDir = dirTree;
+    let subDir = item.path.includes('/') ? dirTree : unCategorized;
     const splitPath = item.path.split('/');
-    
-    if (splitPath.length === 1 && item.type === 'blob') {
-      uncategorizedFiles[item.path] = null;
-      continue;
-    }
-
     for (let i = 0; i < splitPath.length; i++) {
       const part = splitPath[i];
       if (!subDir[part]) {
@@ -53,12 +47,13 @@ async function fetchGithubRepoStructure() {
     for (const [key, value] of Object.entries(tree)) {
       const indent = '  '.repeat(depth);
       const fullPath = prefix ? `${prefix}/${key}` : key;
+
       if (value === null) {
         output += `${indent}- ${key}\n`;
       } else if (value.date && value.title) {
-        output += `${indent}- 📄[[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(fullPath)})\n`;
+        output += `${indent}- [[${value.date}] ${value.title}](https://github.com/${repository}/blob/main/${encodeURIComponent(fullPath)})\n`;
       } else {
-        output += `${indent}- 📂${key}\n${treeToString(value, depth + 1, fullPath)}`;
+        output += `${indent}- ${key}\n${treeToString(value, depth + 1, fullPath)}`;
       }
     }
     return output;
@@ -78,8 +73,9 @@ async function fetchGithubRepoStructure() {
 
   readmeContent += '## 카테고리\n';
   readmeContent += treeToString(dirTree);
+
   readmeContent += '\n## 미분류\n';
-  readmeContent += treeToString(uncategorizedFiles, 0);
+  readmeContent += treeToString(unCategorized);
 
   let sha;
   try {
